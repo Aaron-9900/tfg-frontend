@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { observer } from "mobx-react-lite"
+import React, { useState, useEffect } from "react"
+import { RootStore } from "./models/root-store/root-store"
+import { RootStoreProvider } from "./models/root-store/root-store-context"
+import { setupRootStore } from "./models/root-store/setup-root-store"
+import { Login } from "./screens"
 
-function App() {
+const App = observer(function App() {
+  const [rootStore, setRootStore] = useState<RootStore | undefined>(undefined)
+  useEffect(() => {
+    async function setup() {
+      setupRootStore().then(setRootStore)
+    }
+    setup()
+  }, [])
+  if (!rootStore) return null
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RootStoreProvider value={rootStore}>
+        <Login></Login>
+      </RootStoreProvider>
     </div>
-  );
-}
+  )
+})
 
-export default App;
+export default App
