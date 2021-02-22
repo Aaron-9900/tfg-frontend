@@ -11,6 +11,7 @@ export function parseUser(backendUser: any): UserModel {
 export function parseProposals(proposalsList): ProposalsModelStore {
   return proposalsList.map((prop) => {
     return {
+      id: prop.id,
       user: parseUser(prop.user),
       limit: prop.limit,
       name: prop.name,

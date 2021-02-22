@@ -1,10 +1,13 @@
 import { observer } from "mobx-react-lite"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, Suspense } from "react"
 import { RootStore } from "./models/root-store/root-store"
 import { RootStoreProvider } from "./models/root-store/root-store-context"
 import { setupRootStore } from "./models/root-store/setup-root-store"
-import { Home, Login, Register } from "./screens"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { Spin } from "antd"
+const Home = React.lazy(() => import("./screens/home"))
+const Login = React.lazy(() => import("./screens/login"))
+const Register = React.lazy(() => import("./screens/register"))
 
 const App = observer(function App() {
   const [rootStore, setRootStore] = useState<RootStore | null>(null)
@@ -18,19 +21,21 @@ const App = observer(function App() {
   return (
     <div className="App">
       <RootStoreProvider value={rootStore}>
-        <Router>
-          <Switch>
-            <Route exact path="/">
-              <Home></Home>
-            </Route>
-            <Route path="/login">
-              <Login></Login>
-            </Route>
-            <Route path="/register">
-              <Register></Register>
-            </Route>
-          </Switch>
-        </Router>
+        <Suspense fallback={<Spin size="large" style={{ color: "red" }} />}>
+          <Router>
+            <Switch>
+              <Route exact path="/">
+                <Home></Home>
+              </Route>
+              <Route path="/login">
+                <Login></Login>
+              </Route>
+              <Route path="/register">
+                <Register></Register>
+              </Route>
+            </Switch>
+          </Router>
+        </Suspense>
       </RootStoreProvider>
     </div>
   )

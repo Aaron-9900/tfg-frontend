@@ -5,6 +5,7 @@ import { UserModel } from "../user-model/user-model"
 export const ProposalModel = types
   .model("ProposalModel")
   .props({
+    id: types.identifierNumber,
     name: "",
     description: "",
     limit: 0,

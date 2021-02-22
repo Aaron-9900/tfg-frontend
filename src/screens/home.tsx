@@ -1,10 +1,45 @@
+import { Avatar, List, Typography } from "antd"
+import { observer } from "mobx-react-lite"
 import React, { ReactElement, useEffect } from "react"
+import { CenteredBody } from "../components"
 import { useStores } from "../models/root-store/root-store-context"
+import styled from "styled-components"
+import { color } from "../utils/colors"
+const { Paragraph } = Typography
 
-export function Home(props): ReactElement {
+const StyledList = styled(List)`
+  width: 100%;
+`
+const StyledBody = styled(CenteredBody)`
+  text-align: initial;
+  display: flex;
+  margin-right: 100px;
+  margin-left: 100px;
+`
+const Home = observer(function Home(props): ReactElement {
   const { proposalsStore } = useStores()
   useEffect(() => {
-    proposalsStore.getProposals(0, 15)
+    proposalsStore.getProposals(0, 30)
   }, [])
-  return <div></div>
-}
+  return (
+    <StyledBody>
+      <StyledList>
+        {proposalsStore.proposals.map((e) => {
+          return (
+            <List.Item key={e.id}>
+              <List.Item.Meta
+                avatar={
+                  <Avatar style={{ backgroundColor: color(e.user.name) }}>{e.user.name[0]}</Avatar>
+                }
+                title={<a href="https://ant.design">{e.name}</a>}
+                description={<Paragraph ellipsis={{ rows: 2 }}>{e.description}</Paragraph>}
+              />
+            </List.Item>
+          )
+        })}
+      </StyledList>
+    </StyledBody>
+  )
+})
+
+export default Home

@@ -7,13 +7,16 @@ export const ProposalsModelStore = types
   .model("ProposalsModelStore")
   .props({
     proposals: types.array(ProposalModel),
+    loading: false,
   })
   .extend(withEnvironment)
   .actions((self) => {
     return {
       getProposals: flow(function* (from: number, to: number) {
         try {
+          self.loading = true
           const response: GetProposals = yield self.environment.api.getProposals(from, to)
+          self.loading = false
           if (response.kind === "ok") {
             const proposals = response.proposals
             applySnapshot(self.proposals, proposals as any)
@@ -21,6 +24,7 @@ export const ProposalsModelStore = types
             throw response
           }
         } catch (err) {
+          self.loading = false
           throw err
         }
       }),

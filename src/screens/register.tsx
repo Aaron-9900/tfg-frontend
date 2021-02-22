@@ -36,7 +36,7 @@ const StyledTextWrapper = styled.div`
   padding: 20px;
 `
 
-export const Register = observer(() => {
+const Register = observer(() => {
   const [form] = Form.useForm()
   const { authStore } = useStores()
   const [err, setErr] = useState<string | false>(false)
@@ -59,7 +59,6 @@ export const Register = observer(() => {
       setErr(parseError(e))
     }
   }
-  console.log(redirect)
   if (redirect) {
     return <Redirect to="/login"></Redirect>
   }
@@ -132,3 +131,5 @@ export const Register = observer(() => {
     </CenteredBody>
   )
 })
+
+export default Register

@@ -40,7 +40,7 @@ const StyledTextWrapper = styled.div`
   padding: 20px;
 `
 
-export const Login = observer(function Login(): ReactElement {
+const Login = observer(function Login(): ReactElement {
   const { authStore } = useStores()
   const [err, setErr] = useState<string | false>(false)
   const onFinish = async (value) => {
@@ -91,3 +91,5 @@ export const Login = observer(function Login(): ReactElement {
     </CenteredBody>
   )
 })
+
+export default Login
