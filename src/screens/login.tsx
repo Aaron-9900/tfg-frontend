@@ -8,8 +8,9 @@ import { useStores } from "../models/root-store/root-store-context"
 import { parseError } from "../services/error-parser"
 import { Typography } from "antd"
 import { observer } from "mobx-react-lite"
+import { Link } from "react-router-dom"
 
-const { Text } = Typography
+const { Text, Link: AntdLink } = Typography
 
 const StyledForm = styled(Form)`
   padding: 50px;
@@ -25,6 +26,9 @@ const StyledSpinner = styled(Spin)`
   height: "100%";
   width: "100%";
 `
+const StyledLink = styled(AntdLink)`
+  margin-bottom: 20px;
+`
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
@@ -32,10 +36,13 @@ const layout = {
 const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 }
+const StyledTextWrapper = styled.div`
+  padding: 20px;
+`
 
 export const Login = observer(function Login(): ReactElement {
   const { authStore } = useStores()
-  const [err, setErr] = useState<string | null>(null)
+  const [err, setErr] = useState<string | false>(false)
   const onFinish = async (value) => {
     try {
       const resp = await authStore.login(value.email, value.password)
@@ -43,7 +50,6 @@ export const Login = observer(function Login(): ReactElement {
       setErr(parseError(e))
     }
   }
-  console.log(authStore.loading)
   return (
     <CenteredBody>
       <StyledForm
@@ -51,9 +57,15 @@ export const Login = observer(function Login(): ReactElement {
         name="basic"
         onFinish={onFinish}
         err={err}
-        onFieldsChange={() => setErr(null)}
+        onFieldsChange={() => setErr(false)}
       >
         <StyledTitle level={2}>Login</StyledTitle>
+        <StyledTextWrapper>
+          <StyledLink>
+            <Link to="/register">If you dont have an account, please register</Link>
+          </StyledLink>
+        </StyledTextWrapper>
+
         <Form.Item
           label="Email"
           name="email"

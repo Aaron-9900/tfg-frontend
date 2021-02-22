@@ -20,6 +20,17 @@ export const AuthModel = types
           throw err
         }
       }),
+      register: flow(function* (email: string, name: string, password: string) {
+        self.loading = true
+        try {
+          const resp = yield self.environment.api.register(email, name, password)
+          self.loading = false
+          return resp
+        } catch (err) {
+          self.loading = false
+          throw err
+        }
+      }),
     }
   })
 
