@@ -8,7 +8,7 @@ import { useStores } from "../models/root-store/root-store-context"
 import { parseError } from "../services/error-parser"
 import { Typography } from "antd"
 import { observer } from "mobx-react-lite"
-import { Link } from "react-router-dom"
+import { Link, Redirect } from "react-router-dom"
 
 const { Text, Link: AntdLink } = Typography
 
@@ -43,12 +43,18 @@ const StyledTextWrapper = styled.div`
 const Login = observer(function Login(): ReactElement {
   const { authStore } = useStores()
   const [err, setErr] = useState<string | false>(false)
+  const [isLogged, setLogged] = useState<boolean>(false)
   const onFinish = async (value) => {
     try {
-      const resp = await authStore.login(value.email, value.password)
+      await authStore.login(value.email, value.password)
+      setLogged(true)
     } catch (e) {
+      console.log(e)
       setErr(parseError(e))
     }
+  }
+  if (isLogged) {
+    return <Redirect to="/"></Redirect>
   }
   return (
     <CenteredBody>

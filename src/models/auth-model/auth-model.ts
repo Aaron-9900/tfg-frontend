@@ -5,6 +5,8 @@ export const AuthModel = types
   .model("AuthModel")
   .props({
     loading: false,
+    username: "",
+    id: 0,
   })
   .extend(withEnvironment)
   .actions((self) => {
@@ -14,6 +16,8 @@ export const AuthModel = types
         try {
           const resp = yield self.environment.api.login(email, password)
           self.loading = false
+          self.username = resp.response.username
+          self.id = resp.response.id
           return resp
         } catch (err) {
           self.loading = false

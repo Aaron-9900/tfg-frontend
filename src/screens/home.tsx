@@ -1,4 +1,4 @@
-import { Avatar, List, Typography } from "antd"
+import { Avatar, List, PageHeader, Typography } from "antd"
 import { observer } from "mobx-react-lite"
 import React, { ReactElement, useEffect } from "react"
 import { CenteredBody } from "../components"
@@ -16,13 +16,21 @@ const StyledBody = styled(CenteredBody)`
   margin-right: 100px;
   margin-left: 100px;
 `
+const StyledHeader = styled(PageHeader)`
+  width: 100vw;
+  text-align: right;
+  position: relative;
+  top: 0;
+`
 const Home = observer(function Home(props): ReactElement {
-  const { proposalsStore } = useStores()
+  const { proposalsStore, authStore } = useStores()
   useEffect(() => {
     proposalsStore.getProposals(0, 30)
   }, [])
+  console.log(authStore.username)
   return (
     <StyledBody>
+      <StyledHeader title={authStore.username} subTitle="Welcome" />
       <StyledList>
         {proposalsStore.proposals.map((e) => {
           return (

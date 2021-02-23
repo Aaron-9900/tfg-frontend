@@ -2,7 +2,15 @@ import { ProposalsModelStore } from "../models/proposals-model/proposals-model-s
 import { GeneralApiProblem } from "./api-problem"
 
 export type GetUsersResult =
-  | { kind: "ok"; tokens: { accessToken: string; refreshToken: string } }
+  | {
+      kind: "ok"
+      response: {
+        accessToken: string
+        refreshToken: string
+        username: string
+        id: number
+      }
+    }
   | GeneralApiProblem
 export type PostRegister = { kind: "ok"; username: string } | GeneralApiProblem
 export type GetProposals = { kind: "ok"; proposals: ProposalsModelStore } | GeneralApiProblem

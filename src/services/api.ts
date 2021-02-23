@@ -1,7 +1,7 @@
 import apisauce, { ApiResponse, ApisauceInstance } from "apisauce"
 import Cookies from "universal-cookie/es6"
 import { ProposalsModelStore } from "../models/proposals-model/proposals-model-store"
-import { parseProposals } from "./api-helpers"
+import { parseAuth, parseProposals } from "./api-helpers"
 import { getGeneralApiProblem } from "./api-problem"
 import { GetProposals, GetUsersResult, PostRegister } from "./api-types"
 import { ApiConfig, API_CONFIG } from "./apiconfig"
@@ -38,9 +38,12 @@ export class Api {
     }
     try {
       const { access_token: accessToken, refresh_token: refreshToken } = response.data
-      this.client.headers["Access-Token"] = accessToken
+      this.client.headers["Authorization"] = "Bearer " + accessToken
       this.cookies.set("refresh", refreshToken)
-      return { kind: "ok", tokens: { accessToken: accessToken, refreshToken: refreshToken } }
+      return {
+        kind: "ok",
+        response: parseAuth(response.data),
+      }
     } catch {
       return { kind: "bad-data" }
     }

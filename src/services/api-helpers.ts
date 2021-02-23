@@ -19,3 +19,13 @@ export function parseProposals(proposalsList): ProposalsModelStore {
     }
   })
 }
+
+export function parseAuth(auth) {
+  console.log(auth)
+  return {
+    accessToken: auth.access_token,
+    refreshToken: auth.refresh_token,
+    username: auth.user.name,
+    id: auth.user.id,
+  }
+}
