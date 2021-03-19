@@ -27,7 +27,6 @@ const Home = observer(function Home(props): ReactElement {
   useEffect(() => {
     proposalsStore.getProposals(0, 30)
   }, [])
-  console.log(authStore.username)
   return (
     <StyledBody>
       <StyledHeader title={authStore.username} subTitle="Welcome" />
