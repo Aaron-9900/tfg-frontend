@@ -16,7 +16,8 @@ const StyledForm = styled(Form)`
   padding: 50px;
   background-color: ${colors.backgroundSecondary};
   border-width: "1px";
-  border-color: ${(props) => (props.err ? colors.error : colors.secondaryBackground)};
+  border-color: ${(props: StyledFormProps) =>
+    props.err ? colors.error : colors.secondaryBackground};
 `
 const StyledTitle = styled(Title)`
   text-align: "left";
@@ -40,11 +41,20 @@ const StyledTextWrapper = styled.div`
   padding: 20px;
 `
 
+type StyledFormProps = {
+  err: string | false
+}
+
+type FormFields = {
+  email: string
+  password: string
+}
+
 const Login = observer(function Login(): ReactElement {
   const { authStore } = useStores()
   const [err, setErr] = useState<string | false>(false)
   const [isLogged, setLogged] = useState<boolean>(false)
-  const onFinish = async (value) => {
+  const onFinish = async (value: FormFields) => {
     try {
       await authStore.login(value.email, value.password)
       setLogged(true)
@@ -61,7 +71,7 @@ const Login = observer(function Login(): ReactElement {
       <StyledForm
         {...layout}
         name="basic"
-        onFinish={onFinish}
+        onFinish={(value) => onFinish(value as FormFields)}
         err={err}
         onFieldsChange={() => setErr(false)}
       >
@@ -92,7 +102,7 @@ const Login = observer(function Login(): ReactElement {
             {authStore.loading ? <StyledSpinner /> : "Submit"}
           </Button>
         </Form.Item>
-        {err && <Text type="danger">{err}</Text>}
+        {err && <Text type="danger">{err.toString()}</Text>}
       </StyledForm>
     </CenteredBody>
   )

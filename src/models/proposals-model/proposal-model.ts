@@ -1,5 +1,4 @@
-import { flow, Instance, SnapshotOut, types } from "mobx-state-tree"
-import { withEnvironment } from "../extensions/with-environment"
+import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { UserModel } from "../user-model/user-model"
 
 export const ProposalModel = types

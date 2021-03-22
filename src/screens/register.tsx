@@ -1,4 +1,4 @@
-import { Form, Input, Button, Spin, Typography, message } from "antd"
+import { Form, Input, Button, Spin, Typography } from "antd"
 import React, { useState } from "react"
 import { colors } from "../colors/colors"
 import { CenteredBody } from "../components"
@@ -15,7 +15,8 @@ const StyledForm = styled(Form)`
   padding: 70px;
   background-color: ${colors.backgroundSecondary};
   width: 45vw;
-  border-color: ${(props) => (props.err ? colors.error : colors.secondaryBackground)};
+  border-color: ${(props: StyledFormProps) =>
+    props.err ? colors.error : colors.secondaryBackground};
 `
 const StyledTitle = styled(Title)`
   text-align: "left";
@@ -36,20 +37,33 @@ const StyledTextWrapper = styled.div`
   padding: 20px;
 `
 
+type StyledFormProps = {
+  err: string | false
+}
+
+type FormFields = {
+  email: string
+  name: string
+  password: string
+}
+
 const Register = observer(() => {
   const [form] = Form.useForm()
   const { authStore } = useStores()
   const [err, setErr] = useState<string | false>(false)
   const [redirect, setRedirect] = useState<boolean>(false)
-  const verifyPasswordValidator = (_, verifyPassword, callback) => {
-    console.log(verifyPassword, callback)
+  const verifyPasswordValidator = (
+    _: any,
+    verifyPassword: string,
+    callback: (arg0?: string) => void,
+  ) => {
     if (verifyPassword !== form.getFieldValue("password")) {
       callback("Passwords do not match!")
     } else {
       callback()
     }
   }
-  const onFinish = async (value) => {
+  const onFinish = async (value: FormFields) => {
     try {
       const resp = await authStore.register(value.email, value.name, value.password)
       setRedirect(true)
@@ -68,7 +82,7 @@ const Register = observer(() => {
         {...layout}
         form={form}
         name="basic"
-        onFinish={onFinish}
+        onFinish={(value) => onFinish(value as FormFields)}
         err={err}
         onFieldsChange={() => setErr(false)}
       >
@@ -126,7 +140,7 @@ const Register = observer(() => {
             {authStore.loading ? <StyledSpinner /> : "Submit"}
           </Button>
         </Form.Item>
-        {err && <Text type="danger">{err}</Text>}
+        {err && <Text type="danger">{err.toString()}</Text>}
       </StyledForm>
     </CenteredBody>
   )

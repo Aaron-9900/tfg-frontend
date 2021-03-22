@@ -1,4 +1,5 @@
 import { flow, Instance, SnapshotOut, types } from "mobx-state-tree"
+import { GetUsersResult } from "../../services/api-types"
 import { withEnvironment } from "../extensions/with-environment"
 
 export const AuthModel = types
@@ -14,7 +15,10 @@ export const AuthModel = types
       login: flow(function* (email: string, password: string) {
         self.loading = true
         try {
-          const resp = yield self.environment.api.login(email, password)
+          const resp: GetUsersResult = yield self.environment.api.login(email, password)
+          if (resp.kind !== "ok") {
+            throw resp
+          }
           self.loading = false
           self.username = resp.response.username
           self.id = resp.response.id
