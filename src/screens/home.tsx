@@ -1,4 +1,4 @@
-import { Avatar, List, Typography, Layout, Menu } from "antd"
+import { Avatar, List, Typography, Layout } from "antd"
 import { Content, Footer, Header } from "antd/lib/layout/layout"
 
 import { observer } from "mobx-react-lite"
@@ -7,6 +7,8 @@ import { useStores } from "../models/root-store/root-store-context"
 import styled from "styled-components"
 import { color } from "../utils/colors"
 import { ProposalModel } from "../models/proposals-model/proposal-model"
+import { TopMenu } from "../components/menu/menu"
+import Text from "antd/lib/typography/Text"
 const { Paragraph } = Typography
 
 const StyledList = styled(List)`
@@ -22,20 +24,17 @@ const StyledHeader = styled(Header)`
   color: #ffffff;
 `
 const Home = observer(function Home(props): ReactElement {
-  const { proposalsStore, authStore } = useStores()
+  const { proposalsStore } = useStores()
   useEffect(() => {
     proposalsStore.getProposals(0, 30)
   }, [])
   return (
     <Layout>
       <StyledHeader>
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
-          <Menu.Item key="1">{authStore.username}</Menu.Item>
-          <Menu.Item key="2">Home</Menu.Item>
-        </Menu>
+        <TopMenu currentIndex="2" />
       </StyledHeader>
       <StyledContent>
-        <StyledList>
+        <StyledList itemLayout="vertical">
           {proposalsStore.proposals.map(
             (e: ProposalModel): ReactNode => {
               return (
@@ -47,8 +46,9 @@ const Home = observer(function Home(props): ReactElement {
                       </Avatar>
                     }
                     title={<a href="https://ant.design">{e.name}</a>}
-                    description={<Paragraph ellipsis={{ rows: 2 }}>{e.description}</Paragraph>}
+                    description={e.user.name}
                   />
+                  <Text>{e.description}</Text>
                 </List.Item>
               )
             },

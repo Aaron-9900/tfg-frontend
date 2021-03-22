@@ -1,5 +1,5 @@
 import { applySnapshot, flow, Instance, SnapshotOut, types } from "mobx-state-tree"
-import { GetProposals } from "../../services/api-types"
+import { GetProposals, PostProposal } from "../../services/api-types"
 import { withEnvironment } from "../extensions/with-environment"
 import { ProposalModel } from "./proposal-model"
 
@@ -27,6 +27,28 @@ export const ProposalsModelStore = types
           self.loading = false
           throw err
         }
+      }),
+      postProposal: flow(function* (
+        name: string,
+        description: string,
+        rate: number,
+        limit: number,
+      ) {
+        try {
+          self.loading = true
+          const response: PostProposal = yield self.environment.api.postProposal(
+            name,
+            description,
+            rate,
+            limit,
+          )
+          self.loading = false
+          if (response.kind === "ok") {
+            return true
+          } else {
+            throw response
+          }
+        } catch (err) {}
       }),
     }
   })

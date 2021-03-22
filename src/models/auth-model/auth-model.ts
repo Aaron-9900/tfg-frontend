@@ -10,6 +10,13 @@ export const AuthModel = types
     id: 0,
   })
   .extend(withEnvironment)
+  .views((self) => {
+    return {
+      get isLogged(): boolean {
+        return !!self.username
+      },
+    }
+  })
   .actions((self) => {
     return {
       login: flow(function* (email: string, password: string) {

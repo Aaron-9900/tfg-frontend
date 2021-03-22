@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 import Home from "./screens/home"
 import Login from "./screens/login"
 import Register from "./screens/register"
+import { PrivateRoute } from "./navigation/private-route"
+import CreateProposal from "./screens/create-proposal"
 
 const App = observer(function App() {
   const [rootStore, setRootStore] = useState<RootStore | null>(null)
@@ -22,9 +24,12 @@ const App = observer(function App() {
       <div className="App">
         <Router>
           <Switch>
-            <Route exact path="/">
+            <PrivateRoute exact path="/">
               <Home></Home>
-            </Route>
+            </PrivateRoute>
+            <PrivateRoute path="/proposal/create">
+              <CreateProposal />
+            </PrivateRoute>
             <Route path="/login">
               <Login></Login>
             </Route>
