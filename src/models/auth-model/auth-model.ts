@@ -18,6 +18,11 @@ export const AuthModel = types
     }
   })
   .actions((self) => {
+    function reset() {
+      self.loading = false
+      self.username = ""
+      self.id = 0
+    }
     return {
       login: flow(function* (email: string, password: string) {
         self.loading = true
@@ -44,6 +49,15 @@ export const AuthModel = types
         } catch (err) {
           self.loading = false
           throw err
+        }
+      }),
+      logout: flow(function* () {
+        try {
+          yield self.environment.api.logout()
+          reset()
+          return true
+        } catch (err) {
+          return false
         }
       }),
     }

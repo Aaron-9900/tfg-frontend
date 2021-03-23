@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { getRoot, IStateTreeNode } from "mobx-state-tree"
 import { RootStoreModel } from "../root-store/root-store"
 

@@ -94,6 +94,17 @@ export class Api {
     this.cookies.set("access", response.data.access_token)
     this.client.headers["Authorization"] = "Bearer " + response.data.access_token
   }
+  async logout(): Promise<void> {
+    this.client.headers["Authorization"] = "Bearer " + this.cookies.get("refresh")
+    const response: ApiResponse<any> = await this.client.post("api/protected/logout")
+    if (response.status === 500) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    this.cookies.remove("refresh")
+    this.cookies.remove("access")
+    this.client.headers["Authorization"] = "Bearer "
+  }
   async getProposals(from: number, to: number): Promise<GetProposals> {
     const response: ApiResponse<any> = await this.client.get("/api/public/proposals", {
       from: from,

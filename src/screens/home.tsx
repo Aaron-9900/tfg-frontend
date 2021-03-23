@@ -1,5 +1,5 @@
 import { Avatar, List, Typography, Layout } from "antd"
-import { Content, Footer, Header } from "antd/lib/layout/layout"
+import { Content, Footer } from "antd/lib/layout/layout"
 
 import { observer } from "mobx-react-lite"
 import React, { ReactElement, ReactNode, useEffect } from "react"
@@ -9,6 +9,7 @@ import { color } from "../utils/colors"
 import { ProposalModel } from "../models/proposals-model/proposal-model"
 import { TopMenu } from "../components/menu/menu"
 import Text from "antd/lib/typography/Text"
+import { Header } from "../components"
 const { Paragraph } = Typography
 
 const StyledList = styled(List)`
@@ -19,10 +20,9 @@ const StyledContent = styled(Content)`
   display: flex;
   margin-right: 100px;
   margin-left: 100px;
+  flex: 1;
 `
-const StyledHeader = styled(Header)`
-  color: #ffffff;
-`
+
 const Home = observer(function Home(props): ReactElement {
   const { proposalsStore } = useStores()
   useEffect(() => {
@@ -30,9 +30,9 @@ const Home = observer(function Home(props): ReactElement {
   }, [])
   return (
     <Layout>
-      <StyledHeader>
+      <Header>
         <TopMenu currentIndex="2" />
-      </StyledHeader>
+      </Header>
       <StyledContent>
         <StyledList itemLayout="vertical">
           {proposalsStore.proposals.map(

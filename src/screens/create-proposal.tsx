@@ -1,10 +1,11 @@
 import { Form, Input, InputNumber, Button } from "antd"
 import { SizeType } from "antd/lib/config-provider/SizeContext"
-import Layout, { Content, Header } from "antd/lib/layout/layout"
+import Layout, { Content } from "antd/lib/layout/layout"
 import { observer } from "mobx-react-lite"
 import React from "react"
 import { Switch } from "react-router-dom"
 import styled from "styled-components"
+import { Header } from "../components"
 import { TopMenu } from "../components/menu/menu"
 import { useStores } from "../models/root-store/root-store-context"
 const StyledContent = styled(Content)`
