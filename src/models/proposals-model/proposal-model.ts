@@ -9,6 +9,8 @@ export const ProposalModel = types
     description: "",
     limit: 0,
     user: UserModel,
+    type: types.string,
+    rate: 0,
   })
   .actions((self) => {
     return {}

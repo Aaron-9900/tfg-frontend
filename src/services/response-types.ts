@@ -17,4 +17,9 @@ export interface Proposal {
   name: string
   description: string
   rate: number
+  type: string
+}
+export interface ProposalType {
+  value: string
+  id: number
 }

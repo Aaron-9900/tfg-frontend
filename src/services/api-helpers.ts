@@ -3,6 +3,7 @@ import { ProposalsModelStore } from "../models/proposals-model/proposals-model-s
 import { UserModel } from "../models/user-model/user-model"
 import { LocalLogin } from "./local-types"
 import { Login, Proposal, User } from "./response-types"
+import { cast } from "mobx-state-tree"
 
 export function parseUser(backendUser: User): UserModel {
   return {
@@ -15,12 +16,13 @@ export function parseProposal(proposal: Proposal): ProposalModel {
 }
 
 export function parseProposals(proposalsList: Proposal[]): ProposalsModelStore {
-  return proposalsList.map((prop) => {
-    return {
-      ...parseProposal(prop),
-      user: parseUser(prop.user),
-    }
-  })
+  return cast(
+    proposalsList.map((prop) => {
+      return {
+        ...parseProposal(prop),
+      }
+    }),
+  )
 }
 
 export function parseAuth(auth: Login): LocalLogin {

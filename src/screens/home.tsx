@@ -10,7 +10,7 @@ import { ProposalModel } from "../models/proposals-model/proposal-model"
 import { TopMenu } from "../components/menu/menu"
 import Text from "antd/lib/typography/Text"
 import { Header } from "../components"
-const { Paragraph } = Typography
+import { Link } from "react-router-dom"
 
 const StyledList = styled(List)`
   width: 100%;
@@ -36,19 +36,19 @@ const Home = observer(function Home(props): ReactElement {
       <StyledContent>
         <StyledList itemLayout="vertical">
           {proposalsStore.proposals.map(
-            (e: ProposalModel): ReactNode => {
+            (proposal: ProposalModel): ReactNode => {
               return (
-                <List.Item key={e.id}>
+                <List.Item key={proposal.id}>
                   <List.Item.Meta
                     avatar={
-                      <Avatar style={{ backgroundColor: color(e.user.name) }}>
-                        {e.user.name[0]}
+                      <Avatar style={{ backgroundColor: color(proposal.user.name) }}>
+                        {proposal.user.name[0]}
                       </Avatar>
                     }
-                    title={<a href="https://ant.design">{e.name}</a>}
-                    description={e.user.name}
+                    title={<Link to={`/proposal/${proposal.id}`}>{proposal.name}</Link>}
+                    description={proposal.user.name}
                   />
-                  <Text>{e.description}</Text>
+                  <Text>{proposal.description}</Text>
                 </List.Item>
               )
             },

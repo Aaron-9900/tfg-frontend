@@ -13,7 +13,7 @@ export const AuthModel = types
   .views((self) => {
     return {
       get isLogged(): boolean {
-        return !!self.username
+        return !!self.username && self.environment.api.hasCredentials()
       },
     }
   })

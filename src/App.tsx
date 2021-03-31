@@ -9,6 +9,7 @@ import Login from "./screens/login"
 import Register from "./screens/register"
 import { PrivateRoute } from "./navigation/private-route"
 import CreateProposal from "./screens/create-proposal"
+import ProposalDetail from "./screens/proposal-detail"
 
 const App = observer(function App() {
   const [rootStore, setRootStore] = useState<RootStore | null>(null)
@@ -29,6 +30,9 @@ const App = observer(function App() {
             </PrivateRoute>
             <PrivateRoute path="/proposal/create">
               <CreateProposal />
+            </PrivateRoute>
+            <PrivateRoute path="/proposal/:id">
+              <ProposalDetail />
             </PrivateRoute>
             <Route path="/login">
               <Login></Login>
