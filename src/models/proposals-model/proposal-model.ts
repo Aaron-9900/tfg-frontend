@@ -1,5 +1,10 @@
-import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { flow, Instance, SnapshotOut, types } from "mobx-state-tree"
+import { GetDownloadSignedUrl } from "../../services/api-types"
+import { SubmissionStatus } from "../../services/response-types"
+import { withEnvironment } from "../extensions/with-environment"
+import { withStatus } from "../extensions/with-status"
 import { UserModel } from "../user-model/user-model"
+import { SubmissionModel } from "./submission-model"
 
 export const ProposalModel = types
   .model("ProposalModel")
@@ -11,6 +16,9 @@ export const ProposalModel = types
     user: UserModel,
     type: types.string,
     rate: 0,
+    submissions: types.array(SubmissionModel),
+    submissionCount: 0,
+    hasUserSubmission: false,
   })
   .actions((self) => {
     return {}

@@ -10,7 +10,8 @@ import { ProposalModel } from "../models/proposals-model/proposal-model"
 import { TopMenu } from "../components/menu/menu"
 import Text from "antd/lib/typography/Text"
 import { Header } from "../components"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
+import { ItemList } from "../components/items-list/item-list"
 import { colors } from "../colors/colors"
 
 const StyledList = styled(List)`
@@ -24,37 +25,31 @@ const StyledContent = styled(Content)`
   flex: 1;
   background-color: ${colors.backgroundPrimary};
 `
-
-const Home = observer(function Home(props): ReactElement {
-  const { proposalsStore } = useStores()
+const MyProfile = observer(function MyProfile(props): ReactElement {
+  const { submissionsStore, authStore } = useStores()
+  const { id } = useParams<any>()
   useEffect(() => {
-    proposalsStore.getProposals(0, 30)
+    submissionsStore.getUserSubmissions()
   }, [])
+  const onFileClick = async (fileName: string, submissionId: string) => {
+    const resp = await submissionsStore.getDownloadUrl(fileName, submissionId)
+    window.open(resp?.url ?? "")
+    return resp?.url ?? ""
+  }
   return (
     <Layout>
       <Header>
-        <TopMenu currentIndex="2" />
+        <TopMenu currentIndex="1" />
       </Header>
       <StyledContent>
         <StyledList itemLayout="vertical">
-          {proposalsStore.proposals.map(
-            (proposal: ProposalModel): ReactNode => {
-              return (
-                <List.Item key={proposal.id}>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar style={{ backgroundColor: color(proposal.user.name) }}>
-                        {proposal.user.name[0]}
-                      </Avatar>
-                    }
-                    title={<Link to={`/proposal/${proposal.id}`}>{proposal.name}</Link>}
-                    description={proposal.user.name}
-                  />
-                  <Text>{proposal.description}</Text>
-                </List.Item>
-              )
-            },
-          )}
+          <ItemList
+            onFileClick={onFileClick}
+            items={submissionsStore}
+            withProposal
+            withStatus
+            hasUserPermissions={authStore.id === parseInt(id)}
+          />
         </StyledList>
       </StyledContent>
       <Footer></Footer>
@@ -62,4 +57,4 @@ const Home = observer(function Home(props): ReactElement {
   )
 })
 
-export default Home
+export default MyProfile

@@ -7,14 +7,16 @@ import { PutFile } from "../../services/api-types"
 import { observer } from "mobx-react-lite"
 
 interface UploadSectionProps {
+  userId: string
+  proposalId: string
   store: {
-    putFile: (name: string, file: File, progress: any) => any
+    putFile: (name: string, file: File, userId: string, proposalId: string, progress: any) => any
   }
 }
 
 export const UploadSection = observer(
   (props: UploadSectionProps): JSX.Element => {
-    const { store } = props
+    const { store, userId, proposalId } = props
     const [progress, setProgress] = useState(0)
     const [enableUpload, setEnableUpload] = useState(true)
     const [uploadList, setUploadList] = useState<Array<string>>([])
@@ -30,7 +32,7 @@ export const UploadSection = observer(
           }
         }
         setUploadList((list) => [...list, file.name])
-        const fileResp = await store.putFile(file.name, file, progress)
+        const fileResp = await store.putFile(file.name, file, userId, proposalId, progress)
         if (fileResp?.kind === "ok") {
           setEnableUpload(false)
         }

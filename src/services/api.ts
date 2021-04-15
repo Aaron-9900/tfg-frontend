@@ -2,20 +2,31 @@ import apisauce, { ApiResponse, ApisauceInstance } from "apisauce"
 import { AxiosRequestConfig } from "axios"
 import Cookies from "universal-cookie/es6"
 import { ProposalDetailModel } from "../models/proposals-model/proposal-detail"
-import { parseAuth, parseProposal, parseProposals } from "./api-helpers"
+import {
+  parseAuth,
+  parseProposal,
+  parseProposals,
+  parseSignedUrlResponse,
+  parseSubmissions,
+} from "./api-helpers"
 import { getGeneralApiProblem } from "./api-problem"
 import {
+  GetDownloadSignedUrl,
   GetProposals,
   GetProposalTypes,
   GetSignedUrl,
   GetSingleProposal,
   GetUsersResult,
+  GetUserSubmissions,
   PostProposal,
   PostRegister,
+  PostSubmission,
+  PostSubmissionStatus,
   PutFile,
 } from "./api-types"
 import { ApiConfig, API_CONFIG } from "./apiconfig"
-import { ProposalType } from "./response-types"
+import { SignedDownloadUrlType } from "./local-types"
+import { ProposalType, SubmissionStatus } from "./response-types"
 
 export class Api {
   client: ApisauceInstance
@@ -141,7 +152,7 @@ export class Api {
       if (problem) throw problem
     }
     try {
-      const proposals = parseProposals(response.data)
+      const proposals = parseProposals(response.data.proposals)
       return { kind: "ok", proposals: proposals }
     } catch {
       return { kind: "bad-data" }
@@ -169,7 +180,7 @@ export class Api {
     try {
       const proposal = parseProposal(response.data)
       return { kind: "ok", proposal: proposal }
-    } catch {
+    } catch (err) {
       return { kind: "bad-data" }
     }
   }
@@ -194,7 +205,7 @@ export class Api {
       if (problem) throw problem
     }
     try {
-      return { kind: "ok", proposal: response.data as ProposalDetailModel }
+      return { kind: "ok", proposal: parseProposal(response.data) }
     } catch {
       return { kind: "bad-data" }
     }
@@ -208,21 +219,53 @@ export class Api {
       if (problem) throw problem
     }
     try {
-      return { kind: "ok", url: response.data.url as string }
+      return { kind: "ok", resp: parseSignedUrlResponse(response.data) }
     } catch {
       return { kind: "bad-data" }
     }
   }
+  async getUserSubmissions(): Promise<GetUserSubmissions> {
+    const response: ApiResponse<any> = await this.client.get("/api/protected/submissions")
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok", submissions: parseSubmissions(response.data) }
+    } catch {
+      return { kind: "bad-data" }
+    }
+  }
+  async postSubmission(
+    fileName: string,
+    userId: string,
+    proposalId: string,
+    fileType: string,
+  ): Promise<PostSubmission> {
+    const response: ApiResponse<any> = await this.client.post("/api/protected/submission", {
+      file_name: fileName,
+      user_id: parseInt(userId),
+      proposal_id: parseInt(proposalId),
+      content_type: fileType,
+    })
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    return { kind: "ok" }
+  }
   async submitFile(
     fileName: string,
     file: File,
+    userId: string,
+    proposalId: string,
     onProgress: (event: any) => void,
-  ): Promise<PutFile> {
+  ): Promise<PostSubmission> {
     const urlResponse: GetSignedUrl = await this.getSignedUrl(fileName)
     if (urlResponse.kind !== "ok") {
       throw urlResponse
     }
-    const response: ApiResponse<any> = await this.awsClient.put(urlResponse.url, file, {
+    const response: ApiResponse<any> = await this.awsClient.put(urlResponse.resp.url, file, {
       headers: {
         "Content-Type": file.type,
       },
@@ -234,6 +277,47 @@ export class Api {
       const problem = getGeneralApiProblem(response)
       if (problem) throw problem
     }
-    return { kind: "ok" }
+    const postResponse: PostSubmission = await this.postSubmission(
+      urlResponse.resp.fileName,
+      userId,
+      proposalId,
+      file.type,
+    )
+    return postResponse
+  }
+  async getFileDownloadUrl(fileName: string, submissionId: string): Promise<GetDownloadSignedUrl> {
+    const response: ApiResponse<any> = await this.client.get("/api/protected/submission-file", {
+      file_name: fileName,
+      submission_id: submissionId,
+    })
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok", resp: response.data as SignedDownloadUrlType }
+    } catch (err) {
+      return { kind: "bad-data" }
+    }
+  }
+  async setSubmissionStatus(
+    submissionId: number,
+    proposalId: number,
+    submissionStatus: SubmissionStatus,
+  ): Promise<PostSubmissionStatus> {
+    const response: ApiResponse<any> = await this.client.post("/api/protected/submission-status", {
+      submission_id: submissionId,
+      proposal_id: proposalId,
+      status: submissionStatus,
+    })
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok" }
+    } catch (err) {
+      return { kind: "bad-data" }
+    }
   }
 }

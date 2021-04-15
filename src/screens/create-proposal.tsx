@@ -3,6 +3,7 @@ import Layout, { Content } from "antd/lib/layout/layout"
 import { observer } from "mobx-react-lite"
 import React, { useEffect, useState } from "react"
 import styled from "styled-components"
+import { colors } from "../colors/colors"
 import { Header } from "../components"
 import { TopMenu } from "../components/menu/menu"
 import { useStores } from "../models/root-store/root-store-context"
@@ -12,6 +13,7 @@ const { Option } = Select
 const StyledContent = styled(Content)`
   padding-top: 5vh;
   padding-bottom: 5vh;
+  background-color: ${colors.backgroundPrimary};
 `
 const StyledButton = styled(Button)`
   align-self: center;

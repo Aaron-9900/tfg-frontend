@@ -29,6 +29,8 @@ export const TopMenu = observer(function (props: MenuProps): JSX.Element {
         onClick={() => {
           if (!authStore.isLogged) {
             history.push("/login")
+          } else {
+            history.push("/user/" + authStore.id)
           }
         }}
       >

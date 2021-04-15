@@ -10,6 +10,7 @@ import Register from "./screens/register"
 import { PrivateRoute } from "./navigation/private-route"
 import CreateProposal from "./screens/create-proposal"
 import ProposalDetail from "./screens/proposal-detail"
+import MyProfile from "./screens/my-profile"
 
 const App = observer(function App() {
   const [rootStore, setRootStore] = useState<RootStore | null>(null)
@@ -27,6 +28,9 @@ const App = observer(function App() {
           <Switch>
             <PrivateRoute exact path="/">
               <Home></Home>
+            </PrivateRoute>
+            <PrivateRoute path="/user/:id">
+              <MyProfile />
             </PrivateRoute>
             <PrivateRoute path="/proposal/create">
               <CreateProposal />
