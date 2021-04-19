@@ -2,6 +2,7 @@ export interface User {
   id: number
   created_at: Date
   name: string
+  privacy_policy?: string
 }
 export interface Login {
   access_token: string

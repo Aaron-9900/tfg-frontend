@@ -6,6 +6,7 @@ export const UserModel = types
   .props({
     name: "",
     id: types.identifierNumber,
+    privacyPolicy: types.optional(types.string, ""),
   })
   .actions((self) => {
     return {}

@@ -48,7 +48,7 @@ const textValidator = (_: any, value: string, callback: any) => {
   }
 }
 const CreateProposal = observer(function CreateProposal(props) {
-  const { proposalsStore } = useStores()
+  const { proposalsStore, authStore } = useStores()
   const [types, setTypes] = useState<string[]>([])
   const [form] = Form.useForm()
   const onFinish = async (value: FormFields) => {
@@ -65,6 +65,7 @@ const CreateProposal = observer(function CreateProposal(props) {
       if (types) {
         setTypes(types.map((type) => type.value))
       }
+      await authStore.getUserSettings()
     })()
   }, [])
   return (
@@ -132,9 +133,16 @@ const CreateProposal = observer(function CreateProposal(props) {
             </Select>
           </StyledFormItem>
 
-          <StyledButton type="primary" htmlType="submit">
+          <StyledButton
+            type="primary"
+            htmlType="submit"
+            disabled={!authStore.user?.privacyPolicy.length}
+          >
             {proposalsStore.status === "pending" ? <StyledSpinner /> : "Submit"}
           </StyledButton>
+          {!authStore.user?.privacyPolicy.length && (
+            <Text type="danger">You must have a privacy policy before creating a proposal.</Text>
+          )}
           {proposalsStore.status === "error" && <Text type="danger">Process failed</Text>}
           {proposalsStore.status === "done" && (
             <Text type="success">Proposal submitted successfully.</Text>

@@ -11,6 +11,8 @@ import { PrivateRoute } from "./navigation/private-route"
 import CreateProposal from "./screens/create-proposal"
 import ProposalDetail from "./screens/proposal-detail"
 import MyProfile from "./screens/my-profile"
+import UserSubmissions from "./screens/user-submissions"
+import CreatePrivacyPolicy from "./screens/create-privacy-policy"
 
 const App = observer(function App() {
   const [rootStore, setRootStore] = useState<RootStore | null>(null)
@@ -29,8 +31,14 @@ const App = observer(function App() {
             <PrivateRoute exact path="/">
               <Home></Home>
             </PrivateRoute>
-            <PrivateRoute path="/user/:id">
+            <PrivateRoute exact path="/user/:id">
               <MyProfile />
+            </PrivateRoute>
+            <PrivateRoute exact path="/user/:id/submissions">
+              <UserSubmissions />
+            </PrivateRoute>
+            <PrivateRoute exact path="/user/:id/user-info">
+              <CreatePrivacyPolicy />
             </PrivateRoute>
             <PrivateRoute path="/proposal/create">
               <CreateProposal />

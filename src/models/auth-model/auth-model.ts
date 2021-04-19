@@ -1,27 +1,26 @@
 import { flow, Instance, SnapshotOut, types } from "mobx-state-tree"
 import { GetUsersResult } from "../../services/api-types"
 import { withEnvironment } from "../extensions/with-environment"
+import { UserModel } from "../user-model/user-model"
 
 export const AuthModel = types
   .model("AuthModel")
   .props({
     loading: false,
-    username: "",
-    id: 0,
+    user: types.maybeNull(UserModel),
   })
   .extend(withEnvironment)
   .views((self) => {
     return {
       get isLogged(): boolean {
-        return !!self.username && self.environment.api.hasCredentials()
+        return !!self.user?.name && self.environment.api.hasCredentials()
       },
     }
   })
   .actions((self) => {
     function reset() {
       self.loading = false
-      self.username = ""
-      self.id = 0
+      self.user = null
     }
     return {
       login: flow(function* (email: string, password: string) {
@@ -32,8 +31,29 @@ export const AuthModel = types
             throw resp
           }
           self.loading = false
-          self.username = resp.response.username
-          self.id = resp.response.id
+          self.user = { name: resp.response.username, id: resp.response.id, privacyPolicy: "" }
+          return resp
+        } catch (err) {
+          self.loading = false
+          throw err
+        }
+      }),
+      getUserSettings: flow(function* () {
+        self.loading = true
+        try {
+          const resp = yield self.environment.api.getSettings(self.user?.id ?? 0)
+          self.loading = false
+          return resp
+        } catch (err) {
+          self.loading = false
+          throw err
+        }
+      }),
+      putUserSetting: flow(function* (settingsList: { key: string; value: string }[]) {
+        self.loading = true
+        try {
+          const resp = yield self.environment.api.putUserSettings(settingsList)
+          self.loading = false
           return resp
         } catch (err) {
           self.loading = false

@@ -30,11 +30,11 @@ export const TopMenu = observer(function (props: MenuProps): JSX.Element {
           if (!authStore.isLogged) {
             history.push("/login")
           } else {
-            history.push("/user/" + authStore.id)
+            history.push("/user/" + authStore.user?.id)
           }
         }}
       >
-        {authStore.isLogged ? authStore.username : "Log in"}
+        {authStore.isLogged ? authStore.user?.name : "Log in"}
       </Menu.Item>
       <Menu.Item key="2" onClick={() => history.push("/")}>
         Home

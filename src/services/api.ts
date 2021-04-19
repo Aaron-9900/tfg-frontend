@@ -8,6 +8,7 @@ import {
   parseProposals,
   parseSignedUrlResponse,
   parseSubmissions,
+  parseUserDetails,
 } from "./api-helpers"
 import { getGeneralApiProblem } from "./api-problem"
 import {
@@ -16,6 +17,7 @@ import {
   GetProposalTypes,
   GetSignedUrl,
   GetSingleProposal,
+  GetUserSettings,
   GetUsersResult,
   GetUserSubmissions,
   PostProposal,
@@ -114,6 +116,39 @@ export class Api {
     try {
       const username = response.data.name
       return { kind: "ok", username: username }
+    } catch {
+      return { kind: "bad-data" }
+    }
+  }
+  async getSettings(userId: number): Promise<GetUserSettings> {
+    const response: ApiResponse<any> = await this.client.get("api/protected/user", {
+      user_id: userId,
+    })
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok", user: parseUserDetails(response.data) }
+    } catch {
+      return { kind: "bad-data" }
+    }
+  }
+  async putUserSettings(settings: { key: string; value: string }[]): Promise<GetUserSettings> {
+    const request = settings.reduce((cb, setting) => {
+      cb[setting.key] = setting.value
+      return cb
+    }, {})
+    console.log(request, settings)
+    const response: ApiResponse<any> = await this.client.put("api/protected/user/settings", {
+      ...request,
+    })
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok", user: parseUserDetails(response.data) }
     } catch {
       return { kind: "bad-data" }
     }

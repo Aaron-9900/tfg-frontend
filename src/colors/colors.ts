@@ -7,4 +7,5 @@ export const colors = {
   success: "#52c41a",
   danger: "#ff4d4f",
   pending: "#faad14",
+  lightGrey: "#f0f0f0",
 }

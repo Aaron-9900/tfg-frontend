@@ -54,14 +54,14 @@ const ProposalDetail = observer(function (props) {
   }
   const displayProposals = (): boolean => {
     return (
-      proposalDetailStore.proposal?.user.id === authStore.id ||
+      proposalDetailStore.proposal?.user.id === authStore.user?.id ||
       (proposalDetailStore.proposal?.hasUserSubmission ?? false)
     )
   }
   const setSubmissionStatus = (submissionId: number, status: SubmissionStatus) => {
     proposalDetailStore.setSubmissionStatus(submissionId, status)
   }
-  const isAdmin = () => proposalDetailStore.proposal?.user.id === authStore.id
+  const isAdmin = () => proposalDetailStore.proposal?.user.id === authStore.user?.id
   if (proposalDetailStore.status === "pending") {
     return <StyledSpinner size="large" />
   }
@@ -104,7 +104,9 @@ const ProposalDetail = observer(function (props) {
                     items={proposal}
                     withActions={isAdmin()}
                     proposalId={proposal.id}
-                    hasUserPermissions={proposalDetailStore.proposal?.user.id === authStore.id}
+                    hasUserPermissions={
+                      proposalDetailStore.proposal?.user.id === authStore.user?.id
+                    }
                   />
                 </Col>
               </Row>
@@ -114,7 +116,7 @@ const ProposalDetail = observer(function (props) {
               <Divider>Upload</Divider>
               <UploadSection
                 store={proposalDetailStore}
-                userId={authStore.id.toString()}
+                userId={authStore.user?.id.toString() ?? "0"}
                 proposalId={id}
               />
             </>
