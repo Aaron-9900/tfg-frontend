@@ -23,7 +23,12 @@ export interface ProposalDetail {
   submission_count: number
   has_user_submission: boolean
 }
-
+export interface PrivacyTemplate {
+  id: number
+  content: string
+  name: string
+  description: string
+}
 export interface ProposalType {
   value: string
   id: number

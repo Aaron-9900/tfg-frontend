@@ -1,5 +1,5 @@
 import { flow, Instance, SnapshotOut, types } from "mobx-state-tree"
-import { GetUsersResult } from "../../services/api-types"
+import { GetPrivacyTemplates, GetUsersResult } from "../../services/api-types"
 import { withEnvironment } from "../extensions/with-environment"
 import { UserModel } from "../user-model/user-model"
 
@@ -36,6 +36,19 @@ export const AuthModel = types
         } catch (err) {
           self.loading = false
           throw err
+        }
+      }),
+      getPrivactTemplates: flow(function* () {
+        self.loading = true
+        try {
+          const resp: GetPrivacyTemplates = yield self.environment.api.getPrivactTemplates()
+          if (resp.kind !== "ok") {
+            throw resp
+          }
+          self.loading = false
+          return resp.response
+        } catch (err) {
+          self.loading = false
         }
       }),
       getUserSettings: flow(function* () {

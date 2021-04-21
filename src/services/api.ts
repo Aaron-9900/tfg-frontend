@@ -13,6 +13,7 @@ import {
 import { getGeneralApiProblem } from "./api-problem"
 import {
   GetDownloadSignedUrl,
+  GetPrivacyTemplates,
   GetProposals,
   GetProposalTypes,
   GetSignedUrl,
@@ -351,6 +352,18 @@ export class Api {
     }
     try {
       return { kind: "ok" }
+    } catch (err) {
+      return { kind: "bad-data" }
+    }
+  }
+  async getPrivactTemplates(): Promise<GetPrivacyTemplates> {
+    const response: ApiResponse<any> = await this.client.get("/api/public/privacy-templates")
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok", response: response.data }
     } catch (err) {
       return { kind: "bad-data" }
     }
