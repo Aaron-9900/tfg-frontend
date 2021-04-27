@@ -26,6 +26,7 @@ import {
   PostSubmission,
   PostSubmissionStatus,
   PutFile,
+  PutUserBalance,
 } from "./api-types"
 import { ApiConfig, API_CONFIG } from "./apiconfig"
 import { SignedDownloadUrlType } from "./local-types"
@@ -59,7 +60,7 @@ export class Api {
       if (!request.headers["Authorization"]) {
         request.headers["Authorization"] = "Bearer " + this.cookies.get("access")
       }
-      return new Promise((resolve) => setTimeout(resolve, 2000))
+      return new Promise((resolve) => setTimeout(resolve, 1000))
     })
 
     this.client.addResponseTransform(async (response) => {
@@ -136,13 +137,28 @@ export class Api {
     }
   }
   async putUserSettings(settings: { key: string; value: string }[]): Promise<GetUserSettings> {
+    type Callback = { [index: string]: string }
     const request = settings.reduce((cb, setting) => {
       cb[setting.key] = setting.value
       return cb
-    }, {})
+    }, {} as Callback)
     console.log(request, settings)
     const response: ApiResponse<any> = await this.client.put("api/protected/user/settings", {
       ...request,
+    })
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok", user: parseUserDetails(response.data) }
+    } catch {
+      return { kind: "bad-data" }
+    }
+  }
+  async putUserBalance(ammount: number): Promise<PutUserBalance> {
+    const response: ApiResponse<any> = await this.client.put("api/protected/user/balance", {
+      balance: ammount,
     })
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)

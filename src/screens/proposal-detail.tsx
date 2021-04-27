@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Col, Divider, Layout, Row, Spin, Typography } from "antd"
+import { Col, Divider, Layout, Row, Spin, Typography } from "antd/lib"
 import { Content, Footer } from "antd/lib/layout/layout"
 import Paragraph from "antd/lib/typography/Paragraph"
 import Title from "antd/lib/typography/Title"
@@ -45,6 +45,7 @@ const ProposalDetail = observer(function (props) {
     ;(async () => {
       await proposalDetailStore.getProposal(id)
       setProposal(proposalDetailStore.proposal)
+      await authStore.getUserSettings()
     })()
   }, [])
   const onFileClick = async (fileName: string, submissionId: string) => {
@@ -104,6 +105,8 @@ const ProposalDetail = observer(function (props) {
                     items={proposal}
                     withActions={isAdmin()}
                     proposalId={proposal.id}
+                    rate={proposal.rate}
+                    balance={authStore.user?.balance}
                     hasUserPermissions={
                       proposalDetailStore.proposal?.user.id === authStore.user?.id
                     }
@@ -118,6 +121,7 @@ const ProposalDetail = observer(function (props) {
                 store={proposalDetailStore}
                 userId={authStore.user?.id.toString() ?? "0"}
                 proposalId={id}
+                onSuccess={() => proposalDetailStore.proposal?.setHasUserSubmission(true)}
               />
             </>
           )}

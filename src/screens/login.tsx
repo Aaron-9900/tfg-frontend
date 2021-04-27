@@ -63,7 +63,7 @@ const Login = observer(function Login(): ReactElement {
       setErr(parseError(e))
     }
   }
-  if (isLogged) {
+  if (isLogged || authStore.isLogged) {
     return <Redirect to="/"></Redirect>
   }
   return (

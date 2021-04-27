@@ -1,5 +1,5 @@
 import { Avatar, List, Typography } from "antd"
-import React from "react"
+import React, { useState } from "react"
 import { CloseSquareOutlined, CheckOutlined, DownloadOutlined } from "@ant-design/icons"
 import { SubmissionModel } from "../../models/proposals-model/submission-model"
 import { IconText } from "./icon-text"
@@ -11,6 +11,10 @@ import styled from "styled-components"
 import { colors } from "../../colors/colors"
 import { SubmissionStatus } from "../../services/response-types"
 import CSS from "csstype"
+import { AsyncModal } from "../modals/async-modal"
+import { AccountBalance } from "../balance/account-balance"
+import { Payment } from "../balance/payment"
+import { PostSubmissionStatus } from "../../services/api-types"
 
 const { Text } = Typography
 
@@ -30,6 +34,8 @@ interface ItemListProps {
   withProposal?: boolean
   proposalId?: number
   hasUserPermissions: boolean
+  rate?: number
+  balance?: number
 }
 interface IconTextProps {
   status: SubmissionStatus
@@ -74,7 +80,10 @@ export const ItemList = observer(
       withProposal,
       withStatus,
       hasUserPermissions,
+      rate,
+      balance,
     } = props
+    const [modalOpen, setModalOpen] = useState(false)
     return (
       <List itemLayout="vertical">
         {items.submissions.map((submission: SubmissionModel) => {
@@ -90,13 +99,13 @@ export const ItemList = observer(
               key={submission.id}
               style={withStatus ? listWithStatusStyle : {}}
               actions={
-                withActions
+                withActions && submission.submissionStatus === "pending"
                   ? [
                       <StyledIconText
                         status={submission.submissionStatus}
                         action="accepted"
                         icon={CheckOutlined}
-                        onClick={() => submission.setSubmissionStatus(proposalId ?? 0, "accepted")}
+                        onClick={() => setModalOpen(true)}
                         key="list-vertical-like-o"
                       />,
                       <StyledIconText
@@ -110,6 +119,20 @@ export const ItemList = observer(
                   : undefined
               }
             >
+              <AsyncModal
+                onAccept={async () => {
+                  const resp: PostSubmissionStatus = await submission.setSubmissionStatus(
+                    proposalId ?? 0,
+                    "accepted",
+                  )
+                  return resp
+                }}
+                visible={modalOpen}
+                setVisible={setModalOpen}
+                onCancel={() => null}
+                modalPrimaryText={""}
+                InnerComponent={() => <Payment yourValue={balance ?? 0} yourPayment={rate ?? 0} />}
+              />
               <List.Item.Meta
                 avatar={
                   <Avatar style={{ backgroundColor: color(submission.user.name) }}>
@@ -128,11 +151,11 @@ export const ItemList = observer(
                     </StyledProposalLink>
                   </div>
                 )}
-                <a onClick={() => onFileClick(submission.fileName, submission.id.toString())}>
-                  {submission.submissionStatus === "accepted" || hasUserPermissions
-                    ? "Download"
-                    : null}
-                </a>
+                {submission.submissionStatus === "accepted" && hasUserPermissions ? (
+                  <a onClick={() => onFileClick(submission.fileName, submission.id.toString())}>
+                    Download
+                  </a>
+                ) : null}
               </StyledItemListBody>
             </List.Item>
           )

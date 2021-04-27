@@ -18,6 +18,7 @@ export function parseUser(backendUser: User): UserModel {
     name: backendUser.name,
     id: backendUser.id,
     privacyPolicy: backendUser.privacy_policy ?? "",
+    balance: backendUser.balance ?? 0,
   }
 }
 export function parseSubmission(submission: Submission): SubmissionModel {
@@ -31,13 +32,13 @@ export function parseSubmission(submission: Submission): SubmissionModel {
   })
 }
 export function parseProposal(proposal: ProposalDetail): ProposalModel {
-  return {
+  return cast({
     ...proposal,
     user: parseUser(proposal.user),
     submissionCount: proposal.submission_count,
     submissions: cast(proposal.submissions?.map((submission) => parseSubmission(submission))),
     hasUserSubmission: proposal.has_user_submission,
-  }
+  })
 }
 
 export function parseAuth(auth: Login): LocalLogin {

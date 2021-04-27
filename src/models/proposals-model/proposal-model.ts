@@ -21,7 +21,11 @@ export const ProposalModel = types
     hasUserSubmission: false,
   })
   .actions((self) => {
-    return {}
+    return {
+      setHasUserSubmission: function (val: boolean) {
+        self.hasUserSubmission = val
+      },
+    }
   })
 
 type ProposalModelType = Instance<typeof ProposalModel>

@@ -7,6 +7,7 @@ export const UserModel = types
     name: "",
     id: types.identifierNumber,
     privacyPolicy: types.optional(types.string, ""),
+    balance: types.optional(types.number, 0),
   })
   .actions((self) => {
     return {}

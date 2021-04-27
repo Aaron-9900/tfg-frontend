@@ -1,5 +1,5 @@
 import { flow, Instance, SnapshotOut, types } from "mobx-state-tree"
-import { GetPrivacyTemplates, GetUsersResult } from "../../services/api-types"
+import { GetPrivacyTemplates, GetUsersResult, PutUserBalance } from "../../services/api-types"
 import { withEnvironment } from "../extensions/with-environment"
 import { UserModel } from "../user-model/user-model"
 
@@ -31,7 +31,12 @@ export const AuthModel = types
             throw resp
           }
           self.loading = false
-          self.user = { name: resp.response.username, id: resp.response.id, privacyPolicy: "" }
+          self.user = {
+            name: resp.response.username,
+            id: resp.response.id,
+            privacyPolicy: "",
+            balance: 0,
+          }
           return resp
         } catch (err) {
           self.loading = false
@@ -56,6 +61,8 @@ export const AuthModel = types
         try {
           const resp = yield self.environment.api.getSettings(self.user?.id ?? 0)
           self.loading = false
+          console.log(resp)
+          self.user!.balance = resp.user.balance
           return resp
         } catch (err) {
           self.loading = false
@@ -71,6 +78,20 @@ export const AuthModel = types
         } catch (err) {
           self.loading = false
           throw err
+        }
+      }),
+      putUserBalance: flow(function* (ammount: number) {
+        self.loading = true
+        try {
+          const resp: PutUserBalance = yield self.environment.api.putUserBalance(ammount)
+          if (resp.kind !== "ok") {
+            throw resp
+          }
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          self.user!.balance = resp.user.balance
+          self.loading = false
+        } catch (err) {
+          self.loading = false
         }
       }),
       register: flow(function* (email: string, name: string, password: string) {

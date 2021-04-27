@@ -12,17 +12,18 @@ interface UploadSectionProps {
   store: {
     putFile: (name: string, file: File, userId: string, proposalId: string, progress: any) => any
   }
+  onSuccess?: () => void
 }
 
 export const UploadSection = observer(
   (props: UploadSectionProps): JSX.Element => {
-    const { store, userId, proposalId } = props
+    const { store, userId, proposalId, onSuccess } = props
     const [progress, setProgress] = useState(0)
     const [enableUpload, setEnableUpload] = useState(true)
     const [uploadList, setUploadList] = useState<Array<string>>([])
     const uploader: DraggerProps = {
       customRequest: async function (options) {
-        const { onSuccess, onError, file, onProgress } = options
+        const { onError, file, onProgress } = options
         const progress = (event: any) => {
           const percent = Math.floor((event.loaded / event.total) * 100)
           setProgress(percent)
@@ -35,6 +36,7 @@ export const UploadSection = observer(
         const fileResp = await store.putFile(file.name, file, userId, proposalId, progress)
         if (fileResp?.kind === "ok") {
           setEnableUpload(false)
+          if (onSuccess) onSuccess()
         }
       },
       disabled: !enableUpload,

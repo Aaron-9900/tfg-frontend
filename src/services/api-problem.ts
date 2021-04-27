@@ -25,6 +25,10 @@ export type GeneralApiProblem =
    * Unable to find that resource.  This is a 404.
    */
   | { kind: "not-found" }
+  /*
+   * Client should do something before doint this action
+   */
+  | { kind: "precondition-failed" }
   /**
    * All other 4xx series errors.
    */
@@ -63,6 +67,8 @@ export function getGeneralApiProblem(response: ApiResponse<any>): GeneralApiProb
           return { kind: "forbidden" }
         case 404:
           return { kind: "not-found" }
+        case 412:
+          return { kind: "precondition-failed" }
         default:
           return { kind: "rejected" }
       }

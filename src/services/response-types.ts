@@ -3,6 +3,7 @@ export interface User {
   created_at: Date
   name: string
   privacy_policy?: string
+  balance?: number
 }
 export interface Login {
   access_token: string
@@ -29,6 +30,7 @@ export interface PrivacyTemplate {
   name: string
   description: string
 }
+
 export interface ProposalType {
   value: string
   id: number

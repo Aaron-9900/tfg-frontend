@@ -1,6 +1,6 @@
 import { flow, Instance, SnapshotOut, types } from "mobx-state-tree"
 import { type } from "node:os"
-import { GetDownloadSignedUrl } from "../../services/api-types"
+import { GetDownloadSignedUrl, PostSubmissionStatus } from "../../services/api-types"
 import { SubmissionStatus } from "../../services/response-types"
 import { withEnvironment } from "../extensions/with-environment"
 import { withStatus } from "../extensions/with-status"
@@ -29,7 +29,7 @@ export const SubmissionModel = types
     return {
       setSubmissionStatus: flow(function* (proposalId: number, status: SubmissionStatus) {
         try {
-          const response: GetDownloadSignedUrl = yield self.environment.api.setSubmissionStatus(
+          const response: PostSubmissionStatus = yield self.environment.api.setSubmissionStatus(
             self.id,
             proposalId,
             status,
@@ -41,8 +41,8 @@ export const SubmissionModel = types
           self.submissionStatus = status
           return response
         } catch (err) {
-          console.log(err)
           self.setStatus("error")
+          return err
         }
       }),
     }

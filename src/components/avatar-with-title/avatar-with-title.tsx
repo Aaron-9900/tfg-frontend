@@ -1,5 +1,5 @@
 import React from "react"
-import { Row, Col, Avatar } from "antd"
+import { Row, Col, Avatar } from "antd/lib/"
 import styled from "styled-components"
 import Title from "antd/lib/typography/Title"
 import { color } from "../../utils/colors"

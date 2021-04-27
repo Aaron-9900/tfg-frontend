@@ -10,6 +10,7 @@ import { PrivacyTemplate, ProposalType } from "./response-types"
 export type GetUsersResult = { kind: "ok"; response: LocalLogin } | GeneralApiProblem
 export type GetPrivacyTemplates = { kind: "ok"; response: PrivacyTemplate[] } | GeneralApiProblem
 export type GetUserSettings = { kind: "ok"; user: UserModel } | GeneralApiProblem
+export type PutUserBalance = { kind: "ok"; user: UserModel } | GeneralApiProblem
 export type PostRegister = { kind: "ok"; username: string } | GeneralApiProblem
 export type GetProposals = { kind: "ok"; proposals: ProposalsModelStore } | GeneralApiProblem
 export type PostProposal = { kind: "ok"; proposal: ProposalModel } | GeneralApiProblem
