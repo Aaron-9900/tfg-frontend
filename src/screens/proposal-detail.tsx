@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Col, Divider, Layout, Row, Spin, Typography } from "antd/lib"
+import { Checkbox, Col, Divider, Layout, Row, Spin, Typography } from "antd/lib"
 import { Content, Footer } from "antd/lib/layout/layout"
 import Paragraph from "antd/lib/typography/Paragraph"
 import Title from "antd/lib/typography/Title"
@@ -35,10 +35,16 @@ const StyledSpinner = styled(Spin)`
   margin-top: 50vh;
   position: "absolute";
 `
+const StyledPrivacyPolicyContainer = styled.div`
+  max-height: 500px;
+  overflow: scroll;
+  font-size: 1.5em;
+`
 const ProposalDetail = observer(function (props) {
   const { id } = useParams<ProposalDetailParams>()
   const { proposalDetailStore, authStore } = useStores()
   const [proposal, setProposal] = useState<ProposalModel | null>(null)
+  const [accepted, setAccepted] = useState(false)
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
@@ -89,42 +95,55 @@ const ProposalDetail = observer(function (props) {
           </Row>
           <Row>
             <Col offset={2} span={18}>
+              <Title level={2}>Privacy policy</Title>
+            </Col>
+          </Row>
+          <StyledPrivacyPolicyContainer>
+            <Col offset={2} span={18}>
+              <Text>{proposal.user.privacyPolicy}</Text>
+            </Col>
+          </StyledPrivacyPolicyContainer>
+          <Row>
+            <Col offset={2} span={18}>
               <Text type="secondary">
                 Rate: {proposal.rate.toString()}$ | Submissions: {proposal.submissionCount}/
                 {proposal.limit.toString()}
               </Text>
             </Col>
           </Row>
-          {displayProposals() ? (
-            <>
-              <Divider>Submissions</Divider>
-              <Row>
-                <Col offset={2} span={18}>
-                  <ItemList
-                    onFileClick={onFileClick}
-                    items={proposal}
-                    withActions={isAdmin()}
-                    proposalId={proposal.id}
-                    rate={proposal.rate}
-                    balance={authStore.user?.balance}
-                    hasUserPermissions={
-                      proposalDetailStore.proposal?.user.id === authStore.user?.id
-                    }
-                  />
-                </Col>
-              </Row>
-            </>
-          ) : (
-            <>
-              <Divider>Upload</Divider>
-              <UploadSection
-                store={proposalDetailStore}
-                userId={authStore.user?.id.toString() ?? "0"}
-                proposalId={id}
-                onSuccess={() => proposalDetailStore.proposal?.setHasUserSubmission(true)}
-              />
-            </>
-          )}
+          <Row>
+            <Col offset={2} span={18}>
+              <Checkbox onChange={(e: any) => setAccepted(e.target.checked)}>
+                Accept privacy policy
+              </Checkbox>
+            </Col>
+          </Row>
+          <>
+            <Divider>Upload</Divider>
+            <UploadSection
+              enabled={accepted}
+              store={proposalDetailStore}
+              userId={authStore.user?.id.toString() ?? "0"}
+              proposalId={id}
+              onSuccess={() => proposalDetailStore.proposal?.setHasUserSubmission(true)}
+            />
+          </>
+          <>
+            <Divider>Submissions</Divider>
+            <Row>
+              <Col offset={2} span={18}>
+                <ItemList
+                  onFileClick={onFileClick}
+                  items={proposal}
+                  withActions={isAdmin()}
+                  proposalId={proposal.id}
+                  rate={proposal.rate}
+                  balance={authStore.user?.balance}
+                  hasUserPermissions={proposalDetailStore.proposal?.user.id === authStore.user?.id}
+                />
+              </Col>
+            </Row>
+          </>
         </StyledBody>
       </StyledContent>
       <Footer></Footer>

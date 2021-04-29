@@ -56,7 +56,7 @@ export const RechargeFormModal = (props: AsyncModalProps): JSX.Element => {
             name="ammount"
             rules={[{ required: true, message: "Please, introduce an ammount" }]}
           >
-            <InputNumber min={10} />
+            <InputNumber placeholder="Min. 10" min={10} />
           </Form.Item>
         </Form>
         {errorMessage ? <Text type="danger">{errorMessage}</Text> : null}

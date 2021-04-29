@@ -61,8 +61,8 @@ export const AuthModel = types
         try {
           const resp = yield self.environment.api.getSettings(self.user?.id ?? 0)
           self.loading = false
-          console.log(resp)
           self.user!.balance = resp.user.balance
+          self.user!.privacyPolicy = resp.user.privacyPolicy
           return resp
         } catch (err) {
           self.loading = false

@@ -7,6 +7,7 @@ import {
   parseProposal,
   parseProposals,
   parseSignedUrlResponse,
+  parseSubmission,
   parseSubmissions,
   parseUserDetails,
 } from "./api-helpers"
@@ -304,7 +305,12 @@ export class Api {
       const problem = getGeneralApiProblem(response)
       if (problem) throw problem
     }
-    return { kind: "ok" }
+    try {
+      return { kind: "ok", submission: parseSubmission(response.data) }
+    } catch (err) {
+      console.error(err)
+      return { kind: "bad-data" }
+    }
   }
   async submitFile(
     fileName: string,

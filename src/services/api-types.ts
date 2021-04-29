@@ -19,6 +19,6 @@ export type GetSingleProposal = { kind: "ok"; proposal: ProposalModel } | Genera
 export type GetSignedUrl = { kind: "ok"; resp: SignedUrlType } | GeneralApiProblem
 export type GetDownloadSignedUrl = { kind: "ok"; resp: SignedDownloadUrlType } | GeneralApiProblem
 export type PutFile = { kind: "ok" } | GeneralApiProblem
-export type PostSubmission = { kind: "ok" } | GeneralApiProblem
+export type PostSubmission = { kind: "ok", submission: SubmissionModel } | GeneralApiProblem
 export type GetUserSubmissions = { kind: "ok"; submissions: SubmissionModel[] } | GeneralApiProblem
 export type PostSubmissionStatus = { kind: "ok" } | GeneralApiProblem

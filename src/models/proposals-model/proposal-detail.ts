@@ -3,6 +3,7 @@ import {
   GetDownloadSignedUrl,
   GetSignedUrl,
   GetSingleProposal,
+  PostSubmission,
   PutFile,
 } from "../../services/api-types"
 import { SubmissionStatus } from "../../services/response-types"
@@ -42,7 +43,7 @@ export const ProposalDetailModel = types
         progress: (event: any) => void,
       ) {
         try {
-          const response: PutFile = yield self.environment.api.submitFile(
+          const response: PostSubmission = yield self.environment.api.submitFile(
             fileName,
             file,
             userId,
@@ -53,6 +54,8 @@ export const ProposalDetailModel = types
             throw response
           }
           self.setStatus("idle")
+          console.log(response.submission)
+          self.proposal?.submissions.push(response.submission)
           return response
         } catch (err) {
           console.log(err)

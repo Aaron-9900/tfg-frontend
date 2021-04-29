@@ -9,6 +9,7 @@ import { observer } from "mobx-react-lite"
 interface UploadSectionProps {
   userId: string
   proposalId: string
+  enabled: boolean
   store: {
     putFile: (name: string, file: File, userId: string, proposalId: string, progress: any) => any
   }
@@ -17,7 +18,7 @@ interface UploadSectionProps {
 
 export const UploadSection = observer(
   (props: UploadSectionProps): JSX.Element => {
-    const { store, userId, proposalId, onSuccess } = props
+    const { store, userId, proposalId, enabled, onSuccess } = props
     const [progress, setProgress] = useState(0)
     const [enableUpload, setEnableUpload] = useState(true)
     const [uploadList, setUploadList] = useState<Array<string>>([])
@@ -45,7 +46,7 @@ export const UploadSection = observer(
     }
     return (
       <>
-        <Dragger {...uploader}>
+        <Dragger {...uploader} disabled={!enabled}>
           <p className="ant-upload-drag-icon">
             <InboxOutlined />
           </p>
