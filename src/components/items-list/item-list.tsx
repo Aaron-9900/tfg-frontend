@@ -131,7 +131,7 @@ export const ItemList = observer(
                 setVisible={setModalOpen}
                 onCancel={() => null}
                 modalPrimaryText={""}
-                InnerComponent={() => <Payment yourValue={balance ?? 0} yourPayment={rate ?? 0} />}
+                InnerComponent={() => <Payment yourValue={balance ?? 0} yourPayment={rate ?? 0} id={submission.id.toString()}/>}
               />
               <List.Item.Meta
                 avatar={

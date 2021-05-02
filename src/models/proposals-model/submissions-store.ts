@@ -1,6 +1,7 @@
 import { applySnapshot, cast, flow, Instance, SnapshotOut, types } from "mobx-state-tree"
 import {
   GetDownloadSignedUrl,
+  GetFileSchema,
   GetProposals,
   GetProposalTypes,
   GetUserSubmissions,
@@ -47,6 +48,17 @@ export const SubmissionsModelStore = types
           self.setStatus("error")
         }
       }),
+      getFileSchema: flow(function* (submissionId: string) {
+        try {
+          const fileSchema: GetFileSchema = yield self.environment.api.getFileSchema(submissionId)
+          if (fileSchema.kind !== "ok") {
+            throw fileSchema
+          }
+          return fileSchema.resp
+        } catch (err) {
+          console.error(err)
+        }
+      })
     }
   })
 

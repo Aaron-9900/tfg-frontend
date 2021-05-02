@@ -14,6 +14,7 @@ import {
 import { getGeneralApiProblem } from "./api-problem"
 import {
   GetDownloadSignedUrl,
+  GetFileSchema,
   GetPrivacyTemplates,
   GetProposals,
   GetProposalTypes,
@@ -29,8 +30,9 @@ import {
   PutFile,
   PutUserBalance,
 } from "./api-types"
+import AdmZip from "adm-zip"
 import { ApiConfig, API_CONFIG } from "./apiconfig"
-import { SignedDownloadUrlType } from "./local-types"
+import { Folder, SignedDownloadUrlType } from "./local-types"
 import { ProposalType, SubmissionStatus } from "./response-types"
 
 export class Api {
@@ -263,9 +265,10 @@ export class Api {
       return { kind: "bad-data" }
     }
   }
-  async getSignedUrl(fileName: string): Promise<GetSignedUrl> {
+  async getSignedUrl(fileName: string, addSalt?: boolean): Promise<GetSignedUrl> {
     const response: ApiResponse<any> = await this.client.get("/api/protected/signed-url", {
       file_name: fileName,
+      add_salt: addSalt,
     })
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -312,6 +315,44 @@ export class Api {
       return { kind: "bad-data" }
     }
   }
+  async getFileStructure(file: File): Promise<Folder> {
+    const buffer = await file.arrayBuffer()
+    const zip = new AdmZip(Buffer.from(buffer))
+    const zipEntries = zip.getEntries() // an array of ZipEntry records
+    const obj: Folder = { name: "", children: [] }
+    let parent: Folder | undefined = obj
+    const queue: Folder[] = []
+    zipEntries.forEach(function (zipEntry) {
+      const name = zipEntry.entryName.split("/")
+      const level = name.length - 1
+      const parentIndex = zipEntry.isDirectory ? name.length - 3 : name.length - 2
+      if (!zipEntry.isDirectory && name[name.length - 1][0] === ".") {
+        return
+      }
+      if (level === 1 && zipEntry.isDirectory) {
+        obj.name = name[name.length - 2]
+        queue.push(obj)
+      } else {
+        while (queue.length && parent && parent.name !== name[parentIndex]) {
+          parent = queue.shift()
+        }
+        if (parent && parent.name === name[parentIndex]) {
+          const newObj = {
+            name: name[parentIndex + 1],
+            children: [],
+            path: zipEntry.entryName,
+            isDirectory: zipEntry.isDirectory,
+          }
+          parent.children.push(newObj)
+          if (zipEntry.isDirectory) {
+            queue.push(newObj)
+          }
+        }
+      }
+    })
+
+    return obj
+  }
   async submitFile(
     fileName: string,
     file: File,
@@ -319,16 +360,13 @@ export class Api {
     proposalId: string,
     onProgress: (event: any) => void,
   ): Promise<PostSubmission> {
-    const urlResponse: GetSignedUrl = await this.getSignedUrl(fileName)
+    const urlResponse: GetSignedUrl = await this.getSignedUrl(fileName, true)
     if (urlResponse.kind !== "ok") {
       throw urlResponse
     }
     const response: ApiResponse<any> = await this.awsClient.put(urlResponse.resp.url, file, {
       headers: {
         "Content-Type": file.type,
-      },
-      onUploadProgress: (event) => {
-        onProgress(event)
       },
     })
     if (!response.ok) {
@@ -341,6 +379,40 @@ export class Api {
       proposalId,
       file.type,
     )
+    if (postResponse.kind !== "ok") {
+      throw postResponse
+    }
+
+    const schemaUrlResponse: GetSignedUrl = await this.getSignedUrl(
+      "schema/" + postResponse.submission.id,
+    )
+    if (schemaUrlResponse.kind !== "ok") {
+      throw schemaUrlResponse
+    }
+
+    const fileSchema = await this.getFileStructure(file)
+    const str = JSON.stringify(fileSchema)
+    const bytes = new TextEncoder().encode(str)
+    const blob = new Blob([bytes], {
+      type: "application/json;charset=utf-8",
+    })
+
+    const schemaResponse: ApiResponse<any> = await this.awsClient.put(
+      schemaUrlResponse.resp.url,
+      blob,
+      {
+        headers: {
+          "Content-Type": blob.type,
+        },
+        onUploadProgress: (event) => {
+          onProgress(event)
+        },
+      },
+    )
+    if (!schemaResponse.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
     return postResponse
   }
   async getFileDownloadUrl(fileName: string, submissionId: string): Promise<GetDownloadSignedUrl> {
@@ -357,6 +429,33 @@ export class Api {
     } catch (err) {
       return { kind: "bad-data" }
     }
+  }
+  async getSchemaDownloadUrl(submissionId: string): Promise<GetDownloadSignedUrl> {
+    const response: ApiResponse<any> = await this.client.get("/api/protected/submission-schema", {
+      submission_id: submissionId,
+    })
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) throw problem
+    }
+    try {
+      return { kind: "ok", resp: response.data as SignedDownloadUrlType }
+    } catch (err) {
+      return { kind: "bad-data" }
+    }
+  }
+  async getFileSchema(submissionId: string): Promise<GetFileSchema> {
+    const schemaUrl = await this.getSchemaDownloadUrl(submissionId)
+    if (schemaUrl.kind !== "ok") {
+      throw schemaUrl
+    }
+    const fileSchemaResponse: ApiResponse<any> = await this.awsClient.get(schemaUrl.resp.url)
+    if (!fileSchemaResponse.ok) {
+      const problem = getGeneralApiProblem(fileSchemaResponse)
+      if (problem) throw problem
+    }
+    console.log(fileSchemaResponse.data)
+    return { kind: "ok", resp: fileSchemaResponse.data }
   }
   async setSubmissionStatus(
     submissionId: number,

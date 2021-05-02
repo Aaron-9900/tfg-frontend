@@ -4,9 +4,11 @@ import { ProposalsModelStore } from "../models/proposals-model/proposals-model-s
 import { SubmissionModel } from "../models/proposals-model/submission-model"
 import { UserModel } from "../models/user-model/user-model"
 import { GeneralApiProblem } from "./api-problem"
-import { LocalLogin, SignedDownloadUrlType, SignedUrlType } from "./local-types"
+import { Folder, LocalLogin, SignedDownloadUrlType, SignedUrlType } from "./local-types"
 import { PrivacyTemplate, ProposalType } from "./response-types"
 
+
+export type GetFileSchema = { kind: "ok"; resp: Folder } | GeneralApiProblem
 export type GetUsersResult = { kind: "ok"; response: LocalLogin } | GeneralApiProblem
 export type GetPrivacyTemplates = { kind: "ok"; response: PrivacyTemplate[] } | GeneralApiProblem
 export type GetUserSettings = { kind: "ok"; user: UserModel } | GeneralApiProblem
