@@ -41,7 +41,6 @@ export const AsyncModal = (props: AsyncModalProps): JSX.Element => {
     onCancel()
     setVisible(false)
   }
-
   return (
     <>
       <Modal

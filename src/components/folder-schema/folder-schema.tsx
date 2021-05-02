@@ -61,7 +61,7 @@ export const FolderSchema = (props: FolderSchemaProps): JSX.Element => {
         {schema?.children.map((child) => {
           return (
             <StyledListItem
-              key={child.path}
+              key={child.name + child.path}
               onClick={() => onFolderClick(child)}
               extra={child.isDirectory ? <FolderFilled /> : null}
             >

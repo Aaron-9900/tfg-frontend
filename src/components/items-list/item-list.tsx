@@ -83,7 +83,19 @@ export const ItemList = observer(
       rate,
       balance,
     } = props
-    const [modalOpen, setModalOpen] = useState(false)
+    type ModalState = { [index: number]: boolean }
+    const firstState = items.submissions.reduce((cb, element) => {
+      cb[element.id] = false
+      return cb
+    }, {} as ModalState)
+    const [modalOpen, setModalOpen] = useState<ModalState>(firstState)
+    function toggleModal(id: number, value: boolean) {
+      setModalOpen((prevValue) => {
+        const newState = { ...prevValue }
+        newState[id] = value
+        return { ...newState }
+      })
+    }
     return (
       <List itemLayout="vertical">
         {items.submissions.map((submission: SubmissionModel) => {
@@ -105,7 +117,7 @@ export const ItemList = observer(
                         status={submission.submissionStatus}
                         action="accepted"
                         icon={CheckOutlined}
-                        onClick={() => setModalOpen(true)}
+                        onClick={(value: boolean) => toggleModal(submission.id, true)}
                         key="list-vertical-like-o"
                       />,
                       <StyledIconText
@@ -127,11 +139,17 @@ export const ItemList = observer(
                   )
                   return resp
                 }}
-                visible={modalOpen}
-                setVisible={setModalOpen}
+                visible={modalOpen[submission.id]}
+                setVisible={(value: boolean) => toggleModal(submission.id, value)}
                 onCancel={() => null}
                 modalPrimaryText={""}
-                InnerComponent={() => <Payment yourValue={balance ?? 0} yourPayment={rate ?? 0} id={submission.id.toString()}/>}
+                InnerComponent={() => (
+                  <Payment
+                    yourValue={balance ?? 0}
+                    yourPayment={rate ?? 0}
+                    id={submission.id.toString()}
+                  />
+                )}
               />
               <List.Item.Meta
                 avatar={
