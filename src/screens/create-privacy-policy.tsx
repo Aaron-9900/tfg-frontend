@@ -41,12 +41,12 @@ const CreatePrivacyPolicy = observer(function CreatePrivacyPolicy(props): ReactE
   const history = useHistory()
   const [privacyPolicy, setPrivacyPolicy] = useState(authStore.user?.privacyPolicy ?? "")
   const [templates, setTemplates] = useState<PrivacyTemplate[]>([])
+  const [status, setStatus] = useState<"success" | "error" | "idle" | "pending">("idle")
   const { id } = useParams<any>()
   useEffect(() => {
     ;(async () => {
       try {
         const userSettings: GetUserSettings = await authStore.getUserSettings()
-        console.log(userSettings)
         if (userSettings.kind !== "ok") {
           throw userSettings
         }
@@ -84,12 +84,17 @@ const CreatePrivacyPolicy = observer(function CreatePrivacyPolicy(props): ReactE
               </List.Item>
             )}
           />
+          {status === "error" && <Text type="danger">Process failed</Text>}
+          {status === "success" && (
+            <Text type="success">Privacy policy submitted successfully.</Text>
+          )}
           <Skeleton loading={authStore.loading} paragraph={{ rows: 20 }} active>
             <TextArea
               showCount
               value={privacyPolicy}
               onChange={({ target: { value } }) => {
                 setPrivacyPolicy(value)
+                setStatus("idle")
               }}
               minLength={900}
               maxLength={30000}
@@ -99,9 +104,15 @@ const CreatePrivacyPolicy = observer(function CreatePrivacyPolicy(props): ReactE
         </StyledTypeArea>
         <StyledButton
           type="primary"
-          onClick={async () =>
-            await authStore.putUserSetting([{ key: "privacy_policy", value: privacyPolicy }])
-          }
+          onClick={async () => {
+            setStatus("pending")
+            try {
+              await authStore.putUserSetting([{ key: "privacy_policy", value: privacyPolicy }])
+              setStatus("success")
+            } catch (err) {
+              setStatus("error")
+            }
+          }}
           disabled={authStore.loading}
         >
           Submit

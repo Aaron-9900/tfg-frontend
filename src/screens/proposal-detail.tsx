@@ -45,6 +45,7 @@ const ProposalDetail = observer(function (props) {
   const { proposalDetailStore, authStore } = useStores()
   const [proposal, setProposal] = useState<ProposalModel | null>(null)
   const [accepted, setAccepted] = useState(false)
+  const [submissionSuccess, setSubmissionSuccess] = useState(false)
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
@@ -58,15 +59,6 @@ const ProposalDetail = observer(function (props) {
     const resp = await proposalDetailStore.getDownloadUrl(fileName, submissionId)
     window.open(resp?.url ?? "")
     return resp?.url ?? ""
-  }
-  const displayProposals = (): boolean => {
-    return (
-      proposalDetailStore.proposal?.user.id === authStore.user?.id ||
-      (proposalDetailStore.proposal?.hasUserSubmission ?? false)
-    )
-  }
-  const setSubmissionStatus = (submissionId: number, status: SubmissionStatus) => {
-    proposalDetailStore.setSubmissionStatus(submissionId, status)
   }
   const isAdmin = () => proposalDetailStore.proposal?.user.id === authStore.user?.id
   if (proposalDetailStore.status === "pending") {
@@ -120,12 +112,16 @@ const ProposalDetail = observer(function (props) {
           </Row>
           <>
             <Divider>Upload</Divider>
+            {submissionSuccess && <Text type="success">Submission submitted successfully.</Text>}
             <UploadSection
               enabled={accepted}
               store={proposalDetailStore}
               userId={authStore.user?.id.toString() ?? "0"}
               proposalId={id}
-              onSuccess={() => proposalDetailStore.proposal?.setHasUserSubmission(true)}
+              onSuccess={() => {
+                proposalDetailStore.proposal?.setHasUserSubmission(true)
+                setSubmissionSuccess(true)
+              }}
             />
           </>
           <>

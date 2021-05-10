@@ -57,7 +57,7 @@ export const FolderSchema = (props: FolderSchemaProps): JSX.Element => {
         ))}
       </StyledPathWrapper>
       <StyledFolderPath onClick={() => onBackPressed()}>Back</StyledFolderPath>
-      <StyledList itemLayout="vertical">
+      <StyledList itemLayout="horizontal">
         {schema?.children.map((child) => {
           return (
             <StyledListItem
@@ -66,6 +66,9 @@ export const FolderSchema = (props: FolderSchemaProps): JSX.Element => {
               extra={child.isDirectory ? <FolderFilled /> : null}
             >
               <StyledFolderName>{child.name}</StyledFolderName>
+              {!child.isDirectory && child.size != null && (
+                <div>{(child.size / 1024).toPrecision(2).toString() + " kb"}</div>
+              )}
             </StyledListItem>
           )
         })}

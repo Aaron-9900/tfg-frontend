@@ -342,6 +342,7 @@ export class Api {
             children: [],
             path: zipEntry.entryName,
             isDirectory: zipEntry.isDirectory,
+            size: zipEntry.getCompressedData().byteLength,
           }
           parent.children.push(newObj)
           if (zipEntry.isDirectory) {
@@ -367,6 +368,9 @@ export class Api {
     const response: ApiResponse<any> = await this.awsClient.put(urlResponse.resp.url, file, {
       headers: {
         "Content-Type": file.type,
+      },
+      onUploadProgress: (event) => {
+        onProgress({ loaded: event.loaded, total: event.total })
       },
     })
     if (!response.ok) {
@@ -405,7 +409,7 @@ export class Api {
           "Content-Type": blob.type,
         },
         onUploadProgress: (event) => {
-          onProgress(event)
+          onProgress({ loaded: event.loaded, total: event.total })
         },
       },
     )

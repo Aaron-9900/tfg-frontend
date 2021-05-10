@@ -25,12 +25,12 @@ export const UploadSection = observer(
     const uploader: DraggerProps = {
       customRequest: async function (options) {
         const { onError, file, onProgress } = options
-        const progress = (event: any) => {
+        const progress = (event: any, state?: "file" | "schema") => {
           const percent = Math.floor((event.loaded / event.total) * 100)
           setProgress(percent)
           if (onProgress) {
             // @ts-expect-error Wrong interface usage
-            onProgress({ percent: (event.loaded / event.total) * 100 })
+            onProgress({ percent: percent })
           }
         }
         setUploadList((list) => [...list, file.name])
