@@ -4,6 +4,6 @@ export interface ApiConfig {
 }
 
 export const API_CONFIG: ApiConfig = {
-  baseUrl: "http://209.250.242.42:3000",
+  baseUrl: "https://209.250.242.42:3000",
   timeout: 10000,
 }
