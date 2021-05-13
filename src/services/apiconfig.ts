@@ -4,6 +4,6 @@ export interface ApiConfig {
 }
 
 export const API_CONFIG: ApiConfig = {
-  baseUrl: "https://209.250.242.42:3000",
+  baseUrl: "https://tfg-api.hoffman-garcia.eu",
   timeout: 10000,
 }
