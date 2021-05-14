@@ -11,6 +11,11 @@ export interface Login {
   user: User
 }
 
+export interface ProposalList {
+  count: number
+  proposals: ProposalDetail[]
+}
+
 export interface ProposalDetail {
   id: number
   created_at: Date

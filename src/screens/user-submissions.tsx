@@ -45,15 +45,13 @@ const UserSubmissions = observer(function UserSubmissions(props): ReactElement {
         <TopMenu currentIndex="1" />
       </Header>
       <StyledContent>
-        <StyledList itemLayout="vertical">
-          <ItemList
-            onFileClick={onFileClick}
-            items={submissionsStore}
-            withProposal
-            withStatus
-            hasUserPermissions={authStore.user?.id === parseInt(id)}
-          />
-        </StyledList>
+        <ItemList
+          onFileClick={onFileClick}
+          items={submissionsStore}
+          withProposal
+          withStatus
+          hasUserPermissions={authStore.user?.id === parseInt(id)}
+        />
       </StyledContent>
       <Footer></Footer>
     </Layout>

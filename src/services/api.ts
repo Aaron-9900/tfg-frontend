@@ -207,7 +207,7 @@ export class Api {
       if (problem) throw problem
     }
     try {
-      const proposals = parseProposals(response.data.proposals)
+      const proposals = parseProposals(response.data)
       return { kind: "ok", proposals: proposals }
     } catch {
       return { kind: "bad-data" }

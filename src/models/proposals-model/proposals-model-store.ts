@@ -7,6 +7,7 @@ import { ProposalModel } from "./proposal-model"
 export const ProposalsModelStore = types
   .model("ProposalsModelStore")
   .props({
+    count: types.maybeNull(types.number),
     proposals: types.array(ProposalModel),
   })
   .extend(withEnvironment)
@@ -19,8 +20,9 @@ export const ProposalsModelStore = types
           const response: GetProposals = yield self.environment.api.getProposals(from, to)
           self.setStatus("done")
           if (response.kind === "ok") {
-            const proposals = response.proposals
+            const proposals = response.proposals.proposals
             applySnapshot(self.proposals, proposals as any)
+            self.count = response.proposals.count
           } else {
             throw response
           }

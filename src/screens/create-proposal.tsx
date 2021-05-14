@@ -38,11 +38,11 @@ type FormFields = {
   description: string
   rate: number
   limit: number
-  type: string
+  type?: string
 }
 const textValidator = (_: any, value: string, callback: any) => {
-  if (value.split(" ").length < 10) {
-    callback("Minimum text length is 200")
+  if (value.length < 200) {
+    callback("Minimum number of characters is 200")
   } else {
     callback()
   }
@@ -52,9 +52,9 @@ const CreateProposal = observer(function CreateProposal(props) {
   const [types, setTypes] = useState<string[]>([])
   const [form] = Form.useForm()
   const onFinish = async (value: FormFields) => {
-    const { name, description, rate, limit, type } = value
+    const { name, description, rate, limit } = value
     try {
-      await proposalsStore.postProposal(name, description, rate, limit, type)
+      await proposalsStore.postProposal(name, description, rate, limit, "Facebook")
       form.resetFields()
     } catch (err) {}
   }
@@ -119,20 +119,6 @@ const CreateProposal = observer(function CreateProposal(props) {
           >
             <InputNumber min={1} />
           </StyledFormItem>
-          <StyledFormItem
-            label="Type"
-            name="type"
-            rules={[{ message: "This field is required", required: true }]}
-          >
-            <Select>
-              {types.map((type) => (
-                <Option key={type} value={type}>
-                  {type}
-                </Option>
-              ))}
-            </Select>
-          </StyledFormItem>
-
           <StyledButton
             type="primary"
             htmlType="submit"

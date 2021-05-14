@@ -7,6 +7,7 @@ import {
   BackendSubmissions,
   Login,
   ProposalDetail,
+  ProposalList,
   Submission,
   User,
 } from "./response-types"
@@ -36,7 +37,7 @@ export function parseProposal(proposal: ProposalDetail): ProposalModel {
     ...proposal,
     user: parseUser(proposal.user),
     submissionCount: proposal.submission_count,
-    submissions: cast(proposal.submissions?.map((submission) => parseSubmission(submission))),
+    submissions: proposal.submissions?.map((submission) => parseSubmission(submission)),
     hasUserSubmission: proposal.has_user_submission,
   })
 }
@@ -54,14 +55,15 @@ export function parseSignedUrlResponse(signedUrlResponse: BackendSignedUrlRespon
   return { fileName: signedUrlResponse.file_name, url: signedUrlResponse.url }
 }
 
-export function parseProposals(proposalsList: ProposalDetail[]): ProposalsModelStore {
-  return cast(
-    proposalsList.map((prop) => {
-      return {
-        ...parseProposal(prop),
-      }
-    }),
-  )
+export function parseProposals(proposalsList: ProposalList): ProposalsModelStore {
+  console.log({
+    count: proposalsList.count,
+    proposals: proposalsList.proposals.map((prop) => parseProposal(prop)),
+  })
+  return cast({
+    count: proposalsList.count,
+    proposals: proposalsList.proposals.map((prop) => parseProposal(prop)),
+  })
 }
 export function parseSubmissions(submissions: BackendSubmissions): SubmissionModel[] {
   return submissions.map((submission) => parseSubmission(submission))
