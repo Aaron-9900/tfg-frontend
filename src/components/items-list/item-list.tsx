@@ -99,7 +99,7 @@ export const ItemList = observer((props: ItemListProps): JSX.Element => {
   return (
     <List
       itemLayout="vertical"
-      dataSource={toJS(items.submissions)}
+      dataSource={items.submissions}
       renderItem={(item) => {
         const submission = item as SubmissionModel
         const listWithStatusStyle: CSS.Properties = {

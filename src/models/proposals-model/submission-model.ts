@@ -29,6 +29,7 @@ export const SubmissionModel = types
     return {
       setSubmissionStatus: flow(function* (proposalId: number, status: SubmissionStatus) {
         try {
+          console.log(proposalId, status)
           const response: PostSubmissionStatus = yield self.environment.api.setSubmissionStatus(
             self.id,
             proposalId,

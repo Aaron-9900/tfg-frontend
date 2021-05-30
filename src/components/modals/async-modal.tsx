@@ -23,8 +23,10 @@ export const AsyncModal = (props: AsyncModalProps): JSX.Element => {
   const handleOk = async () => {
     setConfirmLoading(true)
     setErrorMessage(null)
+    console.log(onAccept)
     try {
       const resp = await onAccept()
+      console.log(resp)
       if (resp.kind === "precondition-failed") {
         setErrorMessage("Not enough balance")
         setConfirmLoading(false)
@@ -32,6 +34,7 @@ export const AsyncModal = (props: AsyncModalProps): JSX.Element => {
         setVisible(false)
       }
     } catch (err) {
+      console.error(err)
       setConfirmLoading(false)
     }
     setConfirmLoading(false)

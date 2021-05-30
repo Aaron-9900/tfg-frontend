@@ -38,6 +38,7 @@ const StyledSpinner = styled(Spin)`
 const StyledPrivacyPolicyContainer = styled.div`
   max-height: 500px;
   overflow: scroll;
+  overflow-x: hidden;
   font-size: 1.5em;
 `
 const ProposalDetail = observer(function (props) {
